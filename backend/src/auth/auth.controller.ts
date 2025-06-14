@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { Role } from '../../generated/prisma';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { RegisterDto } from './dto/register.dto';
 
 class LoginDto {
   email: string;
@@ -60,14 +61,14 @@ export class AuthController {
   })
   @ApiResponse({ status: 201, description: 'User registered successfully' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  async register(@Body() registerDto: {
-    email: string;
-    password: string;
-    name: string;
-    role: Role;
-    profileInfo: any;
-  }) {
-    return this.authService.register(registerDto);
+  async register(@Body() registerDto: RegisterDto) {
+    // Generate a unique ID for the user
+    const userId = `user_${Math.random().toString(36).substr(2, 9)}`;
+    
+    return this.authService.register({
+      ...registerDto,
+      id: userId,
+    });
   }
 
   @UseGuards(JwtAuthGuard)

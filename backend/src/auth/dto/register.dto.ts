@@ -1,7 +1,7 @@
 import { IsEmail, IsString, IsEnum, IsOptional } from 'class-validator';
 import { Role } from '@prisma/client';
 
-export class CreateUserDto {
+export class RegisterDto {
   @IsString()
   id: string;
 
@@ -9,7 +9,7 @@ export class CreateUserDto {
   email: string;
 
   @IsString()
-  passwordHash: string;
+  password: string;
 
   @IsString()
   name: string;
