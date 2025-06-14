@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUrl, IsInt, IsPositive, IsNumber, IsEnum } from 'class-validator';
+import { IsString, IsUrl, IsInt, IsPositive, IsNumber, IsEnum, IsOptional } from 'class-validator';
 import { WeightType, WeightMeasurementType } from '@prisma/client';
 
 export class CreateExerciseDto {
@@ -16,6 +16,14 @@ export class CreateExerciseDto {
   })
   @IsUrl()
   videoUrl: string;
+
+  @ApiProperty({
+    description: 'URL to the exercise thumbnail',
+    example: 'https://example.com/exercise-thumbnail.jpg'
+  })
+  @IsString()
+  @IsOptional()
+  thumbnailUrl: string;
 
   @ApiProperty({
     description: 'Text instructions for the exercise',

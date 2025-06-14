@@ -18,6 +18,7 @@ export declare class AdminController {
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
+        thumbnailUrl: string;
         createdById: string;
     })[]>;
     createExercise(createExerciseDto: any): Promise<{
@@ -36,6 +37,7 @@ export declare class AdminController {
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
+        thumbnailUrl: string;
         createdById: string;
     }>;
     updateExercise(id: string, updateExerciseDto: any): Promise<{
@@ -54,6 +56,7 @@ export declare class AdminController {
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
+        thumbnailUrl: string;
         createdById: string;
     }>;
     deleteExercise(id: string): Promise<{
@@ -66,6 +69,7 @@ export declare class AdminController {
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
+        thumbnailUrl: string;
         createdById: string;
     }>;
     getAllCoaches(): Promise<({

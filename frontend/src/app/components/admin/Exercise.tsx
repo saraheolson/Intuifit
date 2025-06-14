@@ -35,6 +35,7 @@ interface Exercise {
   defaultReps: number;
   defaultWeight: number;
   weightType: string;
+  thumbnailUrl: string;
 }
 
 interface CreateExerciseDto {
@@ -44,6 +45,7 @@ interface CreateExerciseDto {
   defaultWeight: number;
   weightType: string;
   videoUrl: string;
+  thumbnailUrl: string;
   instructionsText: string;
   weightMeasurementType: string;
 }
@@ -76,6 +78,7 @@ const Exercise: React.FC = () => {
     defaultWeight: 0,
     weightType: 'bodyweight',
     videoUrl: '',
+    thumbnailUrl: '',
     instructionsText: '',
     weightMeasurementType: '',
   });
@@ -153,6 +156,7 @@ const Exercise: React.FC = () => {
           defaultWeight: 0,
           weightType: 'bodyweight',
           videoUrl: '',
+          thumbnailUrl: '',
           instructionsText: '',
           weightMeasurementType: '',
         });
@@ -195,6 +199,7 @@ const Exercise: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
+              <TableCell>Thumbnail</TableCell>
               <TableCell>Default Sets</TableCell>
               <TableCell>Default Reps</TableCell>
               <TableCell>Default Weight</TableCell>
@@ -206,6 +211,15 @@ const Exercise: React.FC = () => {
             {Array.isArray(exercises) && exercises.map((exercise) => (
               <TableRow key={exercise.id}>
                 <TableCell>{exercise.name}</TableCell>
+                <TableCell>
+                  {exercise.thumbnailUrl && (
+                    <img 
+                      src={exercise.thumbnailUrl} 
+                      alt={`${exercise.name} thumbnail`}
+                      style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                    />
+                  )}
+                </TableCell>
                 <TableCell>{exercise.defaultSets}</TableCell>
                 <TableCell>{exercise.defaultReps}</TableCell>
                 <TableCell>{exercise.defaultWeight}</TableCell>
@@ -248,6 +262,14 @@ const Exercise: React.FC = () => {
               onChange={(e) => setNewExercise({ ...newExercise, videoUrl: e.target.value })}
               fullWidth
               required
+            />
+            <TextField
+              label="Thumbnail URL"
+              value={newExercise.thumbnailUrl || ''}
+              onChange={(e) => setNewExercise({ ...newExercise, thumbnailUrl: e.target.value })}
+              fullWidth
+              required
+              helperText="URL to the exercise thumbnail image"
             />
             <TextField
               label="Instructions"

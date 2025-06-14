@@ -51,6 +51,7 @@ model GlobalExercise {
   id                    String                @id @default(uuid())
   name                  String
   videoUrl              String
+  thumbnailUrl          String
   instructionsText      String
   defaultSets           Int
   defaultReps           Int
@@ -68,6 +69,7 @@ model CoachExercise {
   baseExerciseId        String
   name                  String
   videoUrl              String
+  thumbnailUrl          String
   instructionsText      String
   defaultSets           Int
   defaultReps           Int

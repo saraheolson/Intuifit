@@ -16,6 +16,7 @@ const client_1 = require("@prisma/client");
 class CreateExerciseDto {
     name;
     videoUrl;
+    thumbnailUrl;
     instructionsText;
     defaultSets;
     defaultReps;
@@ -40,6 +41,15 @@ __decorate([
     (0, class_validator_1.IsUrl)(),
     __metadata("design:type", String)
 ], CreateExerciseDto.prototype, "videoUrl", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({
+        description: 'URL to the exercise thumbnail',
+        example: 'https://example.com/exercise-thumbnail.jpg'
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExerciseDto.prototype, "thumbnailUrl", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: 'Text instructions for the exercise',

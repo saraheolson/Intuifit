@@ -17,8 +17,8 @@ export declare class MessagesController {
     } & {
         id: string;
         content: string;
-        receiverId: string;
         senderId: string;
+        receiverId: string;
         sentAt: Date;
     }>;
     getConversations(req: any): Promise<any[]>;
@@ -36,8 +36,8 @@ export declare class MessagesController {
     } & {
         id: string;
         content: string;
-        receiverId: string;
         senderId: string;
+        receiverId: string;
         sentAt: Date;
     })[]>;
 }

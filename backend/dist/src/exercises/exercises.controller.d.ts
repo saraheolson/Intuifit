@@ -7,6 +7,7 @@ export declare class ExercisesController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
@@ -19,6 +20,7 @@ export declare class ExercisesController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
@@ -31,13 +33,14 @@ export declare class ExercisesController {
     getGlobalExercises(): Promise<({
         createdBy: {
             id: string;
-            email: string;
             name: string;
+            email: string;
         };
     } & {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
@@ -51,6 +54,7 @@ export declare class ExercisesController {
             id: string;
             name: string;
             videoUrl: string;
+            thumbnailUrl: string;
             instructionsText: string;
             defaultSets: number;
             defaultReps: number;
@@ -63,6 +67,7 @@ export declare class ExercisesController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
@@ -75,13 +80,14 @@ export declare class ExercisesController {
     getGlobalExercise(id: string): Promise<{
         createdBy: {
             id: string;
-            email: string;
             name: string;
+            email: string;
         };
     } & {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
@@ -95,6 +101,7 @@ export declare class ExercisesController {
             id: string;
             name: string;
             videoUrl: string;
+            thumbnailUrl: string;
             instructionsText: string;
             defaultSets: number;
             defaultReps: number;
@@ -107,6 +114,7 @@ export declare class ExercisesController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
@@ -120,6 +128,7 @@ export declare class ExercisesController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
@@ -132,6 +141,7 @@ export declare class ExercisesController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
@@ -145,6 +155,7 @@ export declare class ExercisesController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
@@ -157,6 +168,7 @@ export declare class ExercisesController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;

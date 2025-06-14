@@ -13,18 +13,18 @@ export declare class UsersController {
         stripeCustomerId: string | null;
     }>;
     getUser(id: string): Promise<({
-        client: {
-            id: string;
-            userId: string;
-            coachId: string;
-            onboardingData: import("@prisma/client/runtime/library").JsonValue;
-        } | null;
         coach: {
             id: string;
             userId: string;
             businessName: string | null;
             subscriptionPlan: string | null;
             subscriptionId: string | null;
+        } | null;
+        client: {
+            id: string;
+            coachId: string;
+            userId: string;
+            onboardingData: import("@prisma/client/runtime/library").JsonValue;
         } | null;
     } & {
         id: string;

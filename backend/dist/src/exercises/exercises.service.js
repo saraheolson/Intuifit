@@ -22,6 +22,7 @@ let ExercisesService = class ExercisesService {
             data: {
                 ...data,
                 createdById: createdById,
+                thumbnailUrl: data.thumbnailUrl || 'https://via.placeholder.com/150',
             },
         });
     }
@@ -37,6 +38,7 @@ let ExercisesService = class ExercisesService {
                 ...data,
                 coachId,
                 baseExerciseId,
+                thumbnailUrl: data.thumbnailUrl || baseExercise.thumbnailUrl,
             },
         });
     }
