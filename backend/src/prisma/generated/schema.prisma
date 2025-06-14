@@ -1,0 +1,178 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  admin
+  coach
+  client
+  team_coach
+}
+
+enum WeightType {
+  bodyweight
+  kettlebell
+  dumbbell
+  band
+  machine
+  other
+}
+
+enum WeightMeasurementType {
+  lbs
+  kg
+  other
+}
+
+enum AssignmentStatus {
+  planned
+  in_progress
+  complete
+}
+
+enum PaymentStatus {
+  paid
+  failed
+  pending
+}
+
+model User {
+  id               String           @id @default(uuid())
+  email            String           @unique
+  passwordHash     String
+  name             String
+  role             Role
+  profileInfo      Json
+  stripeCustomerId String?
+  coach            Coach?
+  client           Client?
+  createdExercises GlobalExercise[] @relation("CreatedExercises")
+  sentMessages     Message[]        @relation("SentMessages")
+  receivedMessages Message[]        @relation("ReceivedMessages")
+}
+
+model Coach {
+  id               String          @id @default(uuid())
+  userId           String          @unique
+  user             User            @relation(fields: [userId], references: [id])
+  businessName     String?
+  subscriptionPlan String?
+  subscriptionId   String?
+  exercises        CoachExercise[]
+  workouts         Workout[]
+  clients          Client[]
+  payments         Payment[]
+}
+
+model Client {
+  id             String        @id @default(uuid())
+  userId         String        @unique
+  user           User          @relation(fields: [userId], references: [id])
+  coachId        String
+  coach          Coach         @relation(fields: [coachId], references: [id])
+  onboardingData Json
+  assignments    Assignment[]
+  progressLogs   ProgressLog[]
+  payments       Payment[]
+}
+
+model GlobalExercise {
+  id                    String                @id @default(uuid())
+  name                  String
+  videoUrl              String
+  instructionsText      String
+  defaultSets           Int
+  defaultReps           Int
+  defaultWeight         Float
+  weightType            WeightType
+  weightMeasurementType WeightMeasurementType
+  createdById           String
+  createdBy             User                  @relation("CreatedExercises", fields: [createdById], references: [id])
+  coachExercises        CoachExercise[]
+}
+
+model CoachExercise {
+  id                    String                @id @default(uuid())
+  coachId               String
+  coach                 Coach                 @relation(fields: [coachId], references: [id])
+  baseExerciseId        String
+  baseExercise          GlobalExercise        @relation(fields: [baseExerciseId], references: [id])
+  name                  String
+  videoUrl              String
+  instructionsText      String
+  defaultSets           Int
+  defaultReps           Int
+  defaultWeight         Float
+  weightType            WeightType
+  weightMeasurementType WeightMeasurementType
+}
+
+model Workout {
+  id          String       @id @default(uuid())
+  coachId     String
+  coach       Coach        @relation(fields: [coachId], references: [id])
+  title       String
+  description String
+  exercises   Json
+  createdAt   DateTime     @default(now())
+  assignments Assignment[]
+}
+
+model Assignment {
+  id            String           @id @default(uuid())
+  workoutId     String
+  clientId      String
+  workout       Workout          @relation(fields: [workoutId], references: [id])
+  client        Client           @relation(fields: [clientId], references: [id])
+  scheduledDate DateTime
+  status        AssignmentStatus
+  progressLogs  ProgressLog[]
+}
+
+model ProgressLog {
+  id              String     @id @default(uuid())
+  clientId        String
+  assignmentId    String
+  client          Client     @relation(fields: [clientId], references: [id])
+  assignment      Assignment @relation(fields: [assignmentId], references: [id])
+  exerciseResults Json
+  notes           String?
+  createdAt       DateTime   @default(now())
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  sentAt     DateTime @default(now())
+  senderId   String
+  receiverId String
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+model Payment {
+  id                   String        @id @default(uuid())
+  clientId             String
+  coachId              String
+  client               Client        @relation(fields: [clientId], references: [id])
+  coach                Coach         @relation(fields: [coachId], references: [id])
+  stripeSubscriptionId String?
+  stripeInvoiceId      String
+  status               PaymentStatus
+  createdAt            DateTime      @default(now())
+}

@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String           @id // This will store the Clerk user ID
+  email            String           @unique
+  passwordHash     String
+  name             String
+  role             Role
+  profileInfo      Json
+  stripeCustomerId String?
+  client           Client?
+  coach            Coach?
+  createdExercises GlobalExercise[] @relation("CreatedExercises")
+  receivedMessages Message[]        @relation("ReceivedMessages")
+  sentMessages     Message[]        @relation("SentMessages")
+}
+
+model Coach {
+  id               String          @id @default(uuid())
+  userId           String          @unique
+  businessName     String?
+  subscriptionPlan String?
+  subscriptionId   String?
+  clients          Client[]
+  user             User            @relation(fields: [userId], references: [id])
+  exercises        CoachExercise[]
+  payments         Payment[]
+  workouts         Workout[]
+}
+
+model Client {
+  id             String        @id @default(uuid())
+  userId         String        @unique
+  coachId        String
+  onboardingData Json
+  assignments    Assignment[]
+  coach          Coach         @relation(fields: [coachId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
+  payments       Payment[]
+  progressLogs   ProgressLog[]
+}
+
+model GlobalExercise {
+  id                    String                @id @default(uuid())
+  name                  String
+  videoUrl              String
+  instructionsText      String
+  defaultSets           Int
+  defaultReps           Int
+  defaultWeight         Float
+  weightType            WeightType
+  weightMeasurementType WeightMeasurementType
+  createdById           String
+  coachExercises        CoachExercise[]
+  createdBy             User                  @relation("CreatedExercises", fields: [createdById], references: [id])
+}
+
+model CoachExercise {
+  id                    String                @id @default(uuid())
+  coachId               String
+  baseExerciseId        String
+  name                  String
+  videoUrl              String
+  instructionsText      String
+  defaultSets           Int
+  defaultReps           Int
+  defaultWeight         Float
+  weightType            WeightType
+  weightMeasurementType WeightMeasurementType
+  baseExercise          GlobalExercise        @relation(fields: [baseExerciseId], references: [id])
+  coach                 Coach                 @relation(fields: [coachId], references: [id])
+}
+
+model Workout {
+  id          String       @id @default(uuid())
+  coachId     String
+  title       String
+  description String
+  exercises   Json
+  createdAt   DateTime     @default(now())
+  assignments Assignment[]
+  coach       Coach        @relation(fields: [coachId], references: [id])
+}
+
+model Assignment {
+  id            String           @id @default(uuid())
+  workoutId     String
+  clientId      String
+  scheduledDate DateTime
+  status        AssignmentStatus
+  client        Client           @relation(fields: [clientId], references: [id])
+  workout       Workout          @relation(fields: [workoutId], references: [id])
+  progressLogs  ProgressLog[]
+}
+
+model ProgressLog {
+  id              String     @id @default(uuid())
+  clientId        String
+  assignmentId    String
+  exerciseResults Json
+  notes           String?
+  createdAt       DateTime   @default(now())
+  assignment      Assignment @relation(fields: [assignmentId], references: [id])
+  client          Client     @relation(fields: [clientId], references: [id])
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  receiverId String
+  content    String
+  sentAt     DateTime @default(now())
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+
+  @@index([senderId])
+  @@index([receiverId])
+}
+
+model Payment {
+  id                   String        @id @default(uuid())
+  clientId             String
+  coachId              String
+  stripeInvoiceId      String
+  status               PaymentStatus
+  stripeSubscriptionId String?
+  createdAt            DateTime      @default(now())
+  client               Client        @relation(fields: [clientId], references: [id])
+  coach                Coach         @relation(fields: [coachId], references: [id])
+}
+
+enum Role {
+  coach
+  client
+  team_coach
+  superadmin
+  admin
+}
+
+enum WeightType {
+  bodyweight
+  kettlebell
+  dumbbell
+  band
+  machine
+  other
+}
+
+enum WeightMeasurementType {
+  lbs
+  kg
+  other
+}
+
+enum AssignmentStatus {
+  planned
+  in_progress
+  complete
+}
+
+enum PaymentStatus {
+  paid
+  failed
+  pending
+}
