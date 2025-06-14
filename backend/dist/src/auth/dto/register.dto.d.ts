@@ -1,8 +1,8 @@
 import { Role } from '@prisma/client';
-export declare class CreateUserDto {
+export declare class RegisterDto {
     id: string;
     email: string;
-    passwordHash: string;
+    password: string;
     name: string;
     role: Role;
     profileInfo?: any;

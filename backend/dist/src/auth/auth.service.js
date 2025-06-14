@@ -51,7 +51,11 @@ let AuthService = class AuthService {
         }
         const passwordHash = await bcrypt.hash(data.password, 10);
         const user = await this.usersService.createUser({
-            ...data,
+            id: data.id,
+            email: data.email,
+            name: data.name,
+            role: data.role,
+            profileInfo: data.profileInfo,
             passwordHash,
         });
         const { passwordHash: _, ...result } = user;

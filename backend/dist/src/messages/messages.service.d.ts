@@ -17,8 +17,8 @@ export declare class MessagesService {
     } & {
         id: string;
         content: string;
-        senderId: string;
         receiverId: string;
+        senderId: string;
         sentAt: Date;
     }>;
     getConversation(userId: string, otherUserId: string): Promise<({
@@ -35,8 +35,8 @@ export declare class MessagesService {
     } & {
         id: string;
         content: string;
-        senderId: string;
         receiverId: string;
+        senderId: string;
         sentAt: Date;
     })[]>;
     getConversations(userId: string): Promise<any[]>;

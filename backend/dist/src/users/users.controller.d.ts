@@ -1,15 +1,9 @@
 import { UsersService } from './users.service';
-import { Role } from '../../generated/prisma';
+import { CreateUserDto } from './dto/create-user.dto';
 export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
-    createUser(data: {
-        email: string;
-        passwordHash: string;
-        name: string;
-        role: Role;
-        profileInfo: any;
-    }): Promise<{
+    create(createUserDto: CreateUserDto): Promise<{
         id: string;
         email: string;
         passwordHash: string;
@@ -19,18 +13,18 @@ export declare class UsersController {
         stripeCustomerId: string | null;
     }>;
     getUser(id: string): Promise<({
+        client: {
+            id: string;
+            userId: string;
+            coachId: string;
+            onboardingData: import("@prisma/client/runtime/library").JsonValue;
+        } | null;
         coach: {
             id: string;
             userId: string;
             businessName: string | null;
             subscriptionPlan: string | null;
             subscriptionId: string | null;
-        } | null;
-        client: {
-            id: string;
-            coachId: string;
-            userId: string;
-            onboardingData: import("@prisma/client/runtime/library").JsonValue;
         } | null;
     } & {
         id: string;

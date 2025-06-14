@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const jwt_auth_guard_1 = require("./guards/jwt-auth.guard");
 const swagger_1 = require("@nestjs/swagger");
+const register_dto_1 = require("./dto/register.dto");
 class LoginDto {
     email;
     password;
@@ -34,7 +35,11 @@ let AuthController = class AuthController {
         return this.authService.login(user);
     }
     async register(registerDto) {
-        return this.authService.register(registerDto);
+        const userId = `user_${Math.random().toString(36).substr(2, 9)}`;
+        return this.authService.register({
+            ...registerDto,
+            id: userId,
+        });
     }
     getProfile(req) {
         return req.user;
@@ -88,7 +93,7 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad request' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [register_dto_1.RegisterDto]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 __decorate([

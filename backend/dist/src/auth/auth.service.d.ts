@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { Role } from '../../generated/prisma';
+import { RegisterDto } from './dto/register.dto';
 export declare class AuthService {
     private usersService;
     private jwtService;
@@ -14,13 +14,7 @@ export declare class AuthService {
             role: any;
         };
     }>;
-    register(data: {
-        email: string;
-        password: string;
-        name: string;
-        role: Role;
-        profileInfo: any;
-    }): Promise<{
+    register(data: RegisterDto): Promise<{
         id: string;
         email: string;
         name: string;

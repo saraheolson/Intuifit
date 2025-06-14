@@ -15,6 +15,7 @@ export declare class UsersService {
         stripeCustomerId: string | null;
     } | null>;
     createUser(data: {
+        id: string;
         email: string;
         passwordHash: string;
         name: string;

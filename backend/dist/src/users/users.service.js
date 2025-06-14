@@ -25,6 +25,7 @@ let UsersService = class UsersService {
     async createUser(data) {
         return this.prisma.user.create({
             data: {
+                id: data.id,
                 email: data.email,
                 passwordHash: data.passwordHash,
                 name: data.name,
@@ -61,6 +62,7 @@ let UsersService = class UsersService {
     async create(createUserDto) {
         return this.prisma.user.create({
             data: {
+                id: createUserDto.id,
                 email: createUserDto.email,
                 passwordHash: createUserDto.passwordHash,
                 name: createUserDto.name,
@@ -80,7 +82,14 @@ let UsersService = class UsersService {
     async update(id, updateUserDto) {
         return this.prisma.user.update({
             where: { id },
-            data: updateUserDto,
+            data: {
+                id: updateUserDto.id,
+                email: updateUserDto.email,
+                passwordHash: updateUserDto.passwordHash,
+                name: updateUserDto.name,
+                role: updateUserDto.role,
+                profileInfo: updateUserDto.profileInfo,
+            },
         });
     }
     async remove(id) {

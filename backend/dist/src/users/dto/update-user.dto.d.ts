@@ -1,5 +1,6 @@
-import { Role } from '../../../generated/prisma';
+import { Role } from '@prisma/client';
 export declare class UpdateUserDto {
+    id?: string;
     email?: string;
     passwordHash?: string;
     name?: string;

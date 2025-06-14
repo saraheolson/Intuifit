@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { Role } from '../../generated/prisma';
+import { RegisterDto } from './dto/register.dto';
 declare class LoginDto {
     email: string;
     password: string;
@@ -15,13 +15,7 @@ export declare class AuthController {
             role: any;
         };
     }>;
-    register(registerDto: {
-        email: string;
-        password: string;
-        name: string;
-        role: Role;
-        profileInfo: any;
-    }): Promise<{
+    register(registerDto: RegisterDto): Promise<{
         id: string;
         email: string;
         name: string;
