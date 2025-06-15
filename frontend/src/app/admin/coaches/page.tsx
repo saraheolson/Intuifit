@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import CoachManagement from '../../components/admin/Coach';
+import CoachManagement from '../../components/admin/CoachManagement';
 import Navigation from '../../components/Navigation';
 
 export default function CoachesPage() {

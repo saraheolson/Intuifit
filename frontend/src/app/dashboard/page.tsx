@@ -1,23 +1,53 @@
-import { auth } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import Navigation from '@/components/Navigation';
+'use client';
 
-export default async function Dashboard() {
-  const { userId, sessionClaims } = await auth();
-  
-  if (!userId) {
-    redirect('/sign-in');
+import { useAuth, useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import Navigation from '../components/Navigation';
+
+export default function Dashboard() {
+  const { userId } = useAuth();
+  const { user } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log('Dashboard - Auth State:', {
+      userId,
+      user,
+      role: user?.publicMetadata?.role,
+      metadata: user?.publicMetadata
+    });
+
+    if (!userId || !user) {
+      console.log('Dashboard - No user or userId, redirecting to sign-in');
+      router.push('/sign-in');
+      return;
+    }
+
+    const role = user.publicMetadata.role as string;
+    console.log('Dashboard - Role:', role);
+
+    if (role !== 'coach' && role !== 'team_coach' && role !== 'COACH' && role !== 'TEAM_COACH') {
+      console.log('Dashboard - Invalid role, redirecting to home');
+      router.push('/');
+    }
+  }, [userId, user, router]);
+
+  if (!userId || !user) {
+    console.log('Dashboard - Rendering null due to auth check');
+    return null;
   }
 
-  const role = sessionClaims?.role as string;
-  if (role !== 'coach' && role !== 'team_coach') {
-    redirect('/');
+  const role = user.publicMetadata.role as string;
+  if (role !== 'coach' && role !== 'team_coach' && role !== 'COACH' && role !== 'TEAM_COACH') {
+    console.log('Dashboard - Rendering null due to role check');
+    return null;
   }
 
+  console.log('Dashboard - Rendering dashboard');
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      
       <main className="py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">

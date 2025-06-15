@@ -38,6 +38,11 @@ export class AdminController {
     return this.adminService.getAllCoaches();
   }
 
+  @Post('coaches')
+  async createCoach(@Body() createCoachDto: { name: string; email: string; subscriptionPlan: string }) {
+    return this.adminService.createCoach(createCoachDto);
+  }
+
   @Get('coaches/:id/clients')
   async getCoachClients(@Param('id') id: string) {
     return this.adminService.getCoachClients(id);

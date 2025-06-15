@@ -12,6 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const client_1 = require("@prisma/client");
+const clerk_sdk_node_1 = require("@clerk/clerk-sdk-node");
 let AdminService = class AdminService {
     prisma;
     constructor(prisma) {
@@ -30,12 +32,9 @@ let AdminService = class AdminService {
             },
         });
     }
-    async createExercise(data) {
+    async createExercise(createExerciseDto) {
         return this.prisma.globalExercise.create({
-            data: {
-                ...data,
-                createdById: data.createdById,
-            },
+            data: createExerciseDto,
             include: {
                 createdBy: {
                     select: {
@@ -47,7 +46,7 @@ let AdminService = class AdminService {
             },
         });
     }
-    async updateExercise(id, data) {
+    async updateExercise(id, updateExerciseDto) {
         const exercise = await this.prisma.globalExercise.findUnique({
             where: { id },
         });
@@ -56,7 +55,7 @@ let AdminService = class AdminService {
         }
         return this.prisma.globalExercise.update({
             where: { id },
-            data,
+            data: updateExerciseDto,
             include: {
                 createdBy: {
                     select: {
@@ -103,9 +102,54 @@ let AdminService = class AdminService {
             },
         });
     }
-    async getCoachClients(coachId) {
+    async createCoach(createCoachDto) {
+        const tempPassword = Math.random().toString(36).slice(-8);
+        const clerkUser = await clerk_sdk_node_1.clerkClient.users.createUser({
+            emailAddress: [createCoachDto.email],
+            firstName: createCoachDto.name.split(' ')[0],
+            lastName: createCoachDto.name.split(' ').slice(1).join(' '),
+            publicMetadata: {
+                role: client_1.Role.coach,
+            },
+            password: tempPassword,
+            phoneNumber: ['+15555555555'],
+        });
+        const user = await this.prisma.user.create({
+            data: {
+                id: clerkUser.id,
+                email: createCoachDto.email,
+                name: createCoachDto.name,
+                role: client_1.Role.coach,
+                passwordHash: '',
+                profileInfo: {},
+            },
+        });
+        const coach = await this.prisma.coach.create({
+            data: {
+                userId: user.id,
+                subscriptionPlan: createCoachDto.subscriptionPlan,
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        });
+        await clerk_sdk_node_1.clerkClient.emails.createEmail({
+            fromEmailName: 'Intuifit',
+            subject: 'Welcome to Intuifit',
+            body: `Welcome to Intuifit! Your temporary password is: ${tempPassword}`,
+            emailAddressId: clerkUser.emailAddresses[0].id,
+        });
+        return coach;
+    }
+    async getCoachClients(id) {
         const coach = await this.prisma.coach.findUnique({
-            where: { id: coachId },
+            where: { id },
             include: {
                 clients: {
                     include: {
@@ -172,22 +216,16 @@ let AdminService = class AdminService {
                     },
                 },
             },
-            orderBy: {
-                createdAt: 'desc',
-            },
         });
     }
     async getAllSubscriptions() {
         return this.prisma.coach.findMany({
             where: {
-                subscriptionId: {
+                subscriptionPlan: {
                     not: null,
                 },
             },
-            select: {
-                id: true,
-                subscriptionId: true,
-                subscriptionPlan: true,
+            include: {
                 user: {
                     select: {
                         id: true,
@@ -207,10 +245,7 @@ let AdminService = class AdminService {
         }
         return this.prisma.coach.update({
             where: { id },
-            data: {
-                subscriptionPlan: data.subscriptionPlan,
-                subscriptionId: data.subscriptionId,
-            },
+            data,
             include: {
                 user: {
                     select: {

@@ -12,13 +12,13 @@ export declare class AdminController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
-        thumbnailUrl: string;
         createdById: string;
     })[]>;
     createExercise(createExerciseDto: any): Promise<{
@@ -31,13 +31,13 @@ export declare class AdminController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
-        thumbnailUrl: string;
         createdById: string;
     }>;
     updateExercise(id: string, updateExerciseDto: any): Promise<{
@@ -50,26 +50,26 @@ export declare class AdminController {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
-        thumbnailUrl: string;
         createdById: string;
     }>;
     deleteExercise(id: string): Promise<{
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
-        thumbnailUrl: string;
         createdById: string;
     }>;
     getAllCoaches(): Promise<({
@@ -97,6 +97,23 @@ export declare class AdminController {
         subscriptionPlan: string | null;
         subscriptionId: string | null;
     })[]>;
+    createCoach(createCoachDto: {
+        name: string;
+        email: string;
+        subscriptionPlan: string;
+    }): Promise<{
+        user: {
+            id: string;
+            email: string;
+            name: string;
+        };
+    } & {
+        id: string;
+        userId: string;
+        businessName: string | null;
+        subscriptionPlan: string | null;
+        subscriptionId: string | null;
+    }>;
     getCoachClients(id: string): Promise<({
         user: {
             id: string;
@@ -157,16 +174,19 @@ export declare class AdminController {
         stripeInvoiceId: string;
         stripeSubscriptionId: string | null;
     })[]>;
-    getAllSubscriptions(): Promise<{
+    getAllSubscriptions(): Promise<({
         user: {
             id: string;
             email: string;
             name: string;
         };
+    } & {
         id: string;
+        userId: string;
+        businessName: string | null;
         subscriptionPlan: string | null;
         subscriptionId: string | null;
-    }[]>;
+    })[]>;
     updateSubscription(id: string, updateSubscriptionDto: any): Promise<{
         user: {
             id: string;

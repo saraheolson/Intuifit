@@ -1,5 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Role } from '@prisma/client';
+import { clerkClient } from '@clerk/clerk-sdk-node';
 
 @Injectable()
 export class AdminService {
@@ -20,12 +22,9 @@ export class AdminService {
     });
   }
 
-  async createExercise(data: any) {
+  async createExercise(createExerciseDto: any) {
     return this.prisma.globalExercise.create({
-      data: {
-        ...data,
-        createdById: data.createdById,
-      },
+      data: createExerciseDto,
       include: {
         createdBy: {
           select: {
@@ -38,7 +37,7 @@ export class AdminService {
     });
   }
 
-  async updateExercise(id: string, data: any) {
+  async updateExercise(id: string, updateExerciseDto: any) {
     const exercise = await this.prisma.globalExercise.findUnique({
       where: { id },
     });
@@ -49,7 +48,7 @@ export class AdminService {
 
     return this.prisma.globalExercise.update({
       where: { id },
-      data,
+      data: updateExerciseDto,
       include: {
         createdBy: {
           select: {
@@ -102,9 +101,63 @@ export class AdminService {
     });
   }
 
-  async getCoachClients(coachId: string) {
+  async createCoach(createCoachDto: { name: string; email: string; subscriptionPlan: string }) {
+    // Create a new user in Clerk
+    const tempPassword = Math.random().toString(36).slice(-8);
+    const clerkUser = await clerkClient.users.createUser({
+      emailAddress: [createCoachDto.email],
+      firstName: createCoachDto.name.split(' ')[0],
+      lastName: createCoachDto.name.split(' ').slice(1).join(' '),
+      publicMetadata: {
+        role: Role.coach,
+      },
+      password: tempPassword,
+      phoneNumber: ['+15555555555'], // Default phone number, user can update later
+    });
+
+    // Create a new user in our database
+    const user = await this.prisma.user.create({
+      data: {
+        id: clerkUser.id,
+        email: createCoachDto.email,
+        name: createCoachDto.name,
+        role: Role.coach,
+        passwordHash: '', // Clerk handles authentication
+        profileInfo: {},
+      },
+    });
+
+    // Create a new coach in our database
+    const coach = await this.prisma.coach.create({
+      data: {
+        userId: user.id,
+        subscriptionPlan: createCoachDto.subscriptionPlan,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    // Send a sign-in email
+    await clerkClient.emails.createEmail({
+      fromEmailName: 'Intuifit',
+      subject: 'Welcome to Intuifit',
+      body: `Welcome to Intuifit! Your temporary password is: ${tempPassword}`,
+      emailAddressId: clerkUser.emailAddresses[0].id,
+    });
+
+    return coach;
+  }
+
+  async getCoachClients(id: string) {
     const coach = await this.prisma.coach.findUnique({
-      where: { id: coachId },
+      where: { id },
       include: {
         clients: {
           include: {
@@ -178,23 +231,17 @@ export class AdminService {
           },
         },
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
     });
   }
 
   async getAllSubscriptions() {
     return this.prisma.coach.findMany({
       where: {
-        subscriptionId: {
+        subscriptionPlan: {
           not: null,
         },
       },
-      select: {
-        id: true,
-        subscriptionId: true,
-        subscriptionPlan: true,
+      include: {
         user: {
           select: {
             id: true,
@@ -217,10 +264,7 @@ export class AdminService {
 
     return this.prisma.coach.update({
       where: { id },
-      data: {
-        subscriptionPlan: data.subscriptionPlan,
-        subscriptionId: data.subscriptionId,
-      },
+      data,
       include: {
         user: {
           select: {

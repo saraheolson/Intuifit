@@ -22,19 +22,9 @@ async function bootstrap() {
     });
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     app.enableCors({
-        origin: (origin, callback) => {
-            logger.debug('CORS request from origin:');
-            logger.debug(origin);
-            if (origin === frontendUrl || !origin) {
-                callback(null, true);
-            }
-            else {
-                logger.warn(`Blocking request from unauthorized origin: ${origin}`);
-                callback(null, false);
-            }
-        },
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
+        origin: true,
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
         credentials: true,
     });
     app.useGlobalPipes(new common_1.ValidationPipe());
@@ -49,6 +39,7 @@ async function bootstrap() {
     const port = process.env.PORT || 3001;
     await app.listen(port);
     logger.log(`Application is running on: http://localhost:${port}`);
+    logger.log(`Swagger documentation is available at: http://localhost:${port}/api`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map

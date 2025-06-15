@@ -12,16 +12,16 @@ export declare class AdminService {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
-        thumbnailUrl: string;
         createdById: string;
     })[]>;
-    createExercise(data: any): Promise<{
+    createExercise(createExerciseDto: any): Promise<{
         createdBy: {
             id: string;
             email: string;
@@ -31,16 +31,16 @@ export declare class AdminService {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
-        thumbnailUrl: string;
         createdById: string;
     }>;
-    updateExercise(id: string, data: any): Promise<{
+    updateExercise(id: string, updateExerciseDto: any): Promise<{
         createdBy: {
             id: string;
             email: string;
@@ -50,26 +50,26 @@ export declare class AdminService {
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
-        thumbnailUrl: string;
         createdById: string;
     }>;
     deleteExercise(id: string): Promise<{
         id: string;
         name: string;
         videoUrl: string;
+        thumbnailUrl: string;
         instructionsText: string;
         defaultSets: number;
         defaultReps: number;
         defaultWeight: number;
         weightType: import(".prisma/client").$Enums.WeightType;
         weightMeasurementType: import(".prisma/client").$Enums.WeightMeasurementType;
-        thumbnailUrl: string;
         createdById: string;
     }>;
     getAllCoaches(): Promise<({
@@ -97,7 +97,24 @@ export declare class AdminService {
         subscriptionPlan: string | null;
         subscriptionId: string | null;
     })[]>;
-    getCoachClients(coachId: string): Promise<({
+    createCoach(createCoachDto: {
+        name: string;
+        email: string;
+        subscriptionPlan: string;
+    }): Promise<{
+        user: {
+            id: string;
+            email: string;
+            name: string;
+        };
+    } & {
+        id: string;
+        userId: string;
+        businessName: string | null;
+        subscriptionPlan: string | null;
+        subscriptionId: string | null;
+    }>;
+    getCoachClients(id: string): Promise<({
         user: {
             id: string;
             email: string;
@@ -157,16 +174,19 @@ export declare class AdminService {
         stripeInvoiceId: string;
         stripeSubscriptionId: string | null;
     })[]>;
-    getAllSubscriptions(): Promise<{
+    getAllSubscriptions(): Promise<({
         user: {
             id: string;
             email: string;
             name: string;
         };
+    } & {
         id: string;
+        userId: string;
+        businessName: string | null;
         subscriptionPlan: string | null;
         subscriptionId: string | null;
-    }[]>;
+    })[]>;
     updateSubscription(id: string, data: any): Promise<{
         user: {
             id: string;

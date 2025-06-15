@@ -33,8 +33,8 @@ export declare class ExercisesService {
     getGlobalExercises(): Promise<({
         createdBy: {
             id: string;
-            name: string;
             email: string;
+            name: string;
         };
     } & {
         id: string;
@@ -80,8 +80,8 @@ export declare class ExercisesService {
     getGlobalExercise(id: string): Promise<{
         createdBy: {
             id: string;
-            name: string;
             email: string;
+            name: string;
         };
     } & {
         id: string;

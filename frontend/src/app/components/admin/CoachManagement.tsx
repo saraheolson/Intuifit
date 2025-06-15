@@ -26,7 +26,8 @@ import {
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import EditIcon from '@mui/icons-material/Edit';
-import { api } from '../../services/api';
+import AddIcon from '@mui/icons-material/Add';
+import { useAuthenticatedApi } from '../../../services/api';
 
 interface Client {
   id: string;
@@ -49,14 +50,27 @@ interface Coach {
   subscriptionId: string | null;
 }
 
+interface NewCoachData {
+  name: string;
+  email: string;
+  subscriptionPlan: string;
+}
+
 const CoachManagement: React.FC = () => {
+  const api = useAuthenticatedApi();
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [openCoach, setOpenCoach] = useState<string | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [selectedCoach, setSelectedCoach] = useState<Coach | null>(null);
   const [formData, setFormData] = useState({
     subscriptionPlan: '',
     subscriptionId: '',
+  });
+  const [newCoachData, setNewCoachData] = useState<NewCoachData>({
+    name: '',
+    email: '',
+    subscriptionPlan: 'free',
   });
 
   useEffect(() => {
@@ -90,6 +104,15 @@ const CoachManagement: React.FC = () => {
     setSelectedCoach(null);
   };
 
+  const handleCloseAddDialog = () => {
+    setAddDialogOpen(false);
+    setNewCoachData({
+      name: '',
+      email: '',
+      subscriptionPlan: 'free',
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCoach) return;
@@ -103,11 +126,32 @@ const CoachManagement: React.FC = () => {
     }
   };
 
+  const handleAddCoach = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await api.post('/admin/coaches', newCoachData);
+      handleCloseAddDialog();
+      fetchCoaches();
+    } catch (error: any) {
+      console.error('Error creating coach:', error);
+      alert(error.response?.data?.message || 'Error creating coach');
+    }
+  };
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Manage Coaches & Clients
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1">
+          Manage Coaches & Clients
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setAddDialogOpen(true)}
+        >
+          Add Coach
+        </Button>
+      </Box>
 
       <TableContainer component={Paper}>
         <Table>
@@ -185,6 +229,7 @@ const CoachManagement: React.FC = () => {
         </Table>
       </TableContainer>
 
+      {/* Edit Coach Dialog */}
       <Dialog open={editDialogOpen} onClose={handleCloseEditDialog}>
         <DialogTitle>Edit Coach Subscription</DialogTitle>
         <form onSubmit={handleSubmit}>
@@ -217,6 +262,59 @@ const CoachManagement: React.FC = () => {
             <Button onClick={handleCloseEditDialog}>Cancel</Button>
             <Button type="submit" variant="contained">
               Update
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {/* Add Coach Dialog */}
+      <Dialog open={addDialogOpen} onClose={handleCloseAddDialog}>
+        <DialogTitle>Add New Coach</DialogTitle>
+        <form onSubmit={handleAddCoach}>
+          <DialogContent>
+            <TextField
+              fullWidth
+              label="Name"
+              value={newCoachData.name}
+              onChange={(e) =>
+                setNewCoachData({ ...newCoachData, name: e.target.value })
+              }
+              margin="normal"
+              required
+            />
+            <TextField
+              fullWidth
+              label="Email"
+              type="email"
+              value={newCoachData.email}
+              onChange={(e) =>
+                setNewCoachData({ ...newCoachData, email: e.target.value })
+              }
+              margin="normal"
+              required
+            />
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Subscription Plan</InputLabel>
+              <Select
+                value={newCoachData.subscriptionPlan}
+                onChange={(e) =>
+                  setNewCoachData({
+                    ...newCoachData,
+                    subscriptionPlan: e.target.value,
+                  })
+                }
+                label="Subscription Plan"
+              >
+                <MenuItem value="free">Free</MenuItem>
+                <MenuItem value="basic">Basic</MenuItem>
+                <MenuItem value="premium">Premium</MenuItem>
+              </Select>
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseAddDialog}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              Add Coach
             </Button>
           </DialogActions>
         </form>

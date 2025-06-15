@@ -39,6 +39,9 @@ let AdminController = class AdminController {
     async getAllCoaches() {
         return this.adminService.getAllCoaches();
     }
+    async createCoach(createCoachDto) {
+        return this.adminService.createCoach(createCoachDto);
+    }
     async getCoachClients(id) {
         return this.adminService.getCoachClients(id);
     }
@@ -90,6 +93,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "getAllCoaches", null);
+__decorate([
+    (0, common_1.Post)('coaches'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "createCoach", null);
 __decorate([
     (0, common_1.Get)('coaches/:id/clients'),
     __param(0, (0, common_1.Param)('id')),

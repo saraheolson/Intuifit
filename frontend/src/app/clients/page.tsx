@@ -1,20 +1,51 @@
-import { auth } from '@clerk/nextjs';
-import { redirect } from 'next/navigation';
-import Navigation from '@/components/Navigation';
+'use client';
+
+import { useAuth, useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import Navigation from '../components/Navigation';
 import Link from 'next/link';
 
-export default async function ClientsPage() {
-  const { userId, sessionClaims } = await auth();
-  
-  if (!userId) {
-    redirect('/sign-in');
+export default function ClientsPage() {
+  const { userId } = useAuth();
+  const { user } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log('Clients Page - Auth State:', {
+      userId,
+      user,
+      role: user?.publicMetadata?.role,
+      metadata: user?.publicMetadata
+    });
+
+    if (!userId || !user) {
+      console.log('Clients Page - No user or userId, redirecting to sign-in');
+      router.push('/sign-in');
+      return;
+    }
+
+    const role = user.publicMetadata.role as string;
+    console.log('Clients Page - Role:', role);
+
+    if (role !== 'coach' && role !== 'team_coach' && role !== 'COACH' && role !== 'TEAM_COACH') {
+      console.log('Clients Page - Invalid role, redirecting to home');
+      router.push('/');
+    }
+  }, [userId, user, router]);
+
+  if (!userId || !user) {
+    console.log('Clients Page - Rendering null due to auth check');
+    return null;
   }
 
-  const role = sessionClaims?.role as string;
-  if (role !== 'coach' && role !== 'team_coach') {
-    redirect('/');
+  const role = user.publicMetadata.role as string;
+  if (role !== 'coach' && role !== 'team_coach' && role !== 'COACH' && role !== 'TEAM_COACH') {
+    console.log('Clients Page - Rendering null due to role check');
+    return null;
   }
 
+  console.log('Clients Page - Rendering clients page');
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
