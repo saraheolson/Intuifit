@@ -106,9 +106,10 @@ let ExercisesService = class ExercisesService {
         if (exercise.createdById !== userId) {
             throw new common_1.ForbiddenException('You do not have permission to update this exercise');
         }
+        const { createdBy, ...updateData } = data;
         return this.prisma.globalExercise.update({
             where: { id },
-            data,
+            data: updateData,
         });
     }
     async updateCoachExercise(id, data, coachId) {

@@ -111,9 +111,12 @@ export class ExercisesService {
       throw new ForbiddenException('You do not have permission to update this exercise');
     }
 
+    // Remove any relation data from the update
+    const { createdBy, ...updateData } = data as any;
+
     return this.prisma.globalExercise.update({
       where: { id },
-      data,
+      data: updateData,
     });
   }
 

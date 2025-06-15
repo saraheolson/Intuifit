@@ -35,7 +35,11 @@ interface Exercise {
   defaultReps: number;
   defaultWeight: number;
   weightType: string;
+  videoUrl: string;
   thumbnailUrl: string;
+  instructionsText: string;
+  weightMeasurementType: string;
+  createdById: string;
 }
 
 interface CreateExerciseDto {
@@ -70,6 +74,8 @@ const Exercise: React.FC = () => {
   const api = useAuthenticatedApi();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [open, setOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [newExercise, setNewExercise] = useState<CreateExerciseDto>({
     name: '',
@@ -171,6 +177,35 @@ const Exercise: React.FC = () => {
     }
   };
 
+  const handleEdit = (exercise: Exercise) => {
+    setEditingExercise(exercise);
+    setEditOpen(true);
+  };
+
+  const handleUpdate = async () => {
+    if (!editingExercise) return;
+
+    try {
+      const { id, createdById, ...updateData } = editingExercise;
+      const response = await api.put<Exercise>(`/exercises/global/${id}`, updateData);
+
+      if (response.data) {
+        setExercises(prev => 
+          prev.map(ex => ex.id === id ? response.data : ex)
+        );
+        setEditOpen(false);
+        setEditingExercise(null);
+      }
+    } catch (error: any) {
+      console.error('Error updating exercise:', error);
+      if (error.response?.status === 401) {
+        router.push('/sign-in');
+      } else {
+        setError(error.response?.data?.message || 'Failed to update exercise');
+      }
+    }
+  };
+
   const handleCloseError = () => {
     setError(null);
   };
@@ -225,7 +260,7 @@ const Exercise: React.FC = () => {
                 <TableCell>{exercise.defaultWeight}</TableCell>
                 <TableCell>{exercise.weightType}</TableCell>
                 <TableCell>
-                  <IconButton onClick={() => {/* TODO: Implement edit exercise */}}>
+                  <IconButton onClick={() => handleEdit(exercise)}>
                     <EditIcon />
                   </IconButton>
                   <IconButton onClick={() => handleDelete(exercise.id)}>
@@ -338,6 +373,114 @@ const Exercise: React.FC = () => {
             disabled={!newExercise.name}
           >
             Create
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog 
+        open={editOpen} 
+        onClose={() => {
+          setEditOpen(false);
+          setEditingExercise(null);
+        }}
+      >
+        <DialogTitle>Edit Exercise</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
+            <TextField
+              label="Exercise Name"
+              value={editingExercise?.name || ''}
+              onChange={(e) => setEditingExercise(prev => prev ? {...prev, name: e.target.value} : null)}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Video URL"
+              value={editingExercise?.videoUrl || ''}
+              onChange={(e) => setEditingExercise(prev => prev ? {...prev, videoUrl: e.target.value} : null)}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Thumbnail URL"
+              value={editingExercise?.thumbnailUrl || ''}
+              onChange={(e) => setEditingExercise(prev => prev ? {...prev, thumbnailUrl: e.target.value} : null)}
+              fullWidth
+              required
+              helperText="URL to the exercise thumbnail image"
+            />
+            <TextField
+              label="Instructions"
+              value={editingExercise?.instructionsText || ''}
+              onChange={(e) => setEditingExercise(prev => prev ? {...prev, instructionsText: e.target.value} : null)}
+              fullWidth
+              multiline
+              rows={4}
+              required
+            />
+            <TextField
+              label="Default Sets"
+              type="number"
+              value={editingExercise?.defaultSets || 0}
+              onChange={(e) => setEditingExercise(prev => prev ? {...prev, defaultSets: Number(e.target.value)} : null)}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Default Reps"
+              type="number"
+              value={editingExercise?.defaultReps || 0}
+              onChange={(e) => setEditingExercise(prev => prev ? {...prev, defaultReps: Number(e.target.value)} : null)}
+              fullWidth
+              required
+            />
+            <TextField
+              label="Default Weight"
+              type="number"
+              value={editingExercise?.defaultWeight || 0}
+              onChange={(e) => setEditingExercise(prev => prev ? {...prev, defaultWeight: Number(e.target.value)} : null)}
+              fullWidth
+              required
+            />
+            <TextField
+              select
+              label="Weight Type"
+              value={editingExercise?.weightType || ''}
+              onChange={(e) => setEditingExercise(prev => prev ? {...prev, weightType: e.target.value} : null)}
+              fullWidth
+              required
+            >
+              {WEIGHT_TYPES.map((type) => (
+                <MenuItem key={type} value={type}>{type.charAt(0).toUpperCase() + type.slice(1)}</MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              select
+              label="Weight Measurement Type"
+              value={editingExercise?.weightMeasurementType || ''}
+              onChange={(e) => setEditingExercise(prev => prev ? {...prev, weightMeasurementType: e.target.value} : null)}
+              fullWidth
+              required
+            >
+              {WEIGHT_MEASUREMENT_TYPES.map((type) => (
+                <MenuItem key={type} value={type}>{type.toUpperCase()}</MenuItem>
+              ))}
+            </TextField>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setEditOpen(false);
+            setEditingExercise(null);
+          }}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleUpdate} 
+            variant="contained" 
+            disabled={!editingExercise?.name}
+          >
+            Update
           </Button>
         </DialogActions>
       </Dialog>

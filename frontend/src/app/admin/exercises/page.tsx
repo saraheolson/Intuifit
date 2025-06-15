@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useAuth, useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import ExerciseManagement from '../../components/admin/Exercise';
+import Navigation from '../../components/Navigation';
 
 export default function ExercisesPage() {
   const { userId } = useAuth();
@@ -37,5 +38,14 @@ export default function ExercisesPage() {
   }
 
   console.log('ExercisesPage - Rendering ExerciseManagement');
-  return <ExerciseManagement />;
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navigation />
+      <main className="py-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <ExerciseManagement />
+        </div>
+      </main>
+    </div>
+  );
 } 
